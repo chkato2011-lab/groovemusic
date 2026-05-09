@@ -1060,13 +1060,13 @@ async function saveFoto() {
 
   try {
     // Upload to Supabase Storage
-    const ext = file.name.split('.').pop().toLowerCase();
-    const filename = sec.replace(/:/g,'-') + '-' + Date.now() + '.' + ext;
+    const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'');
+    const filename = sec.replace(/:/g,'-').replace(/[^a-z0-9-]/g,'') + '-' + Date.now() + '.' + (ext||'jpg');
     const path = 'fotos/' + filename;
 
     document.getElementById('foto-progress-bar').style.width='60%';
 
-    const { data: upData, error: upErr } = await sb().storage.from('groovemusic').upload(path, file, { cacheControl:'3600', upsert:false });
+    const { data: upData, error: upErr } = await sb().storage.from('groovemusic').upload(path, file, { cacheControl:'3600', upsert:false, contentType: file.type });
     if (upErr) throw upErr;
 
     document.getElementById('foto-progress-bar').style.width='85%';
