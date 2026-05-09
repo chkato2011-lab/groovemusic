@@ -611,8 +611,8 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
 // ═══════════════════════════════════════════
 // CONFIG SUPABASE — completar con tus datos
 // ═══════════════════════════════════════════
-const SB_URL  = 'https://crzbfgnurphqbkldazlh.supabase.co/rest/v1/';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyemJmZ251cnBocWJrbGRhemxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTk5MzgsImV4cCI6MjA5MzgzNTkzOH0.01CK2ZlShPr67iyUFT2CMiPpza7C55QtWUAy9BLAq5QI';
+const SB_URL  = 'https://TU_PROYECTO.supabase.co';
+const SB_KEY  = 'TU_ANON_KEY_AQUI';
 
 // ═══════════════════════════════════════════
 // SUPABASE CLIENT
@@ -656,7 +656,7 @@ const DB = {
   async bulkCli(l)  { return await sb().from('clientes').upsert(l,{onConflict:'email',ignoreDuplicates:true}); },
   async delCli(id)  { await sb().from('clientes').delete().eq('id',id); },
   async getAdmins() { const {data}=await sb().from('admins').select('id,nombre,apellido,email,telefono,created_at').order('created_at'); return data??[]; },
-  async loginAdmin(email,pass) { const {data}=await sb().from('admins').select('*').eq('email',email).eq('pass_hash',pass).single(); return data??null; },
+  async loginAdmin(email,pass) { const {data}=await sb().from('admins').select('*').eq('email',email.toLowerCase().trim()).eq('pass_hash',pass.trim()).single(); return data??null; },
   async saveAdmin(a) { if(a.id){const p={nombre:a.nombre,apellido:a.apellido,telefono:a.telefono};if(a.pass)p.pass_hash=a.pass;await sb().from('admins').update(p).eq('id',a.id);}else{await sb().from('admins').insert({nombre:a.nombre,apellido:a.apellido,email:a.email,telefono:a.telefono,pass_hash:a.pass});} },
   async delAdmin(id) { await sb().from('admins').delete().eq('id',id); },
 };
@@ -793,7 +793,7 @@ function sv(id,v) { const e=document.getElementById(id); if(e)e.value=v??''; }
 // AUTH
 // ═══════════════════════════════════════════
 async function doLogin() {
-  const email = gv('l-mail'), pass = gv('l-pass');
+  const email = gv('l-mail').toLowerCase().trim(), pass = gv('l-pass').trim();
   document.getElementById('l-err').style.display='none';
   if (!email||!pass) return;
   const admin = await DB.loginAdmin(email,pass);
