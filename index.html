@@ -225,6 +225,10 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
 .btn-g:hover{background:var(--red2);}
 .muted{color:var(--muted);font-size:.8rem;}
 
+/* FOTO UPLOAD */
+#foto-drop-area:hover { border-color: var(--red) !important; }
+#foto-drop-area.dragover { border-color: var(--red); background: rgba(232,0,26,.05); }
+
 /* RESPONSIVE */
 @media(max-width:900px){
   #nav-links{display:none;}
@@ -563,13 +567,27 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
   <div class="modal">
     <button class="modal-x" onclick="closeModal('modal-foto')">✕</button>
     <h2>AGREGAR FOTO</h2>
-    <p class="modal-sub">Pegá la URL directa de la imagen (Imgur, Cloudinary, etc.)</p>
+    <p class="modal-sub">Subí una imagen desde tu computadora</p>
     <div style="margin-top:1.5rem;">
-      <div class="fg"><label>URL de la imagen *</label><input type="url" id="foto-url" placeholder="https://i.imgur.com/..."></div>
+      <!-- UPLOAD AREA -->
+      <div id="foto-drop-area" onclick="document.getElementById('foto-file-input').click()" style="border:2px dashed var(--gray4);padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:1rem;" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--gray4)'">
+        <div id="foto-preview" style="display:none;margin-bottom:.75rem;"><img id="foto-preview-img" style="max-height:140px;margin:0 auto;object-fit:contain;"></div>
+        <div id="foto-drop-label" style="font-family:var(--fc);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">
+          📁 Hacer click para seleccionar imagen<br>
+          <span style="font-size:.7rem;opacity:.6;">JPG, PNG, GIF, WEBP — máx 5MB</span>
+        </div>
+        <input type="file" id="foto-file-input" accept="image/*" style="display:none;" onchange="previewFoto(this)">
+      </div>
+      <div id="foto-upload-progress" style="display:none;margin-bottom:1rem;">
+        <div style="background:var(--gray3);height:4px;border-radius:2px;overflow:hidden;">
+          <div id="foto-progress-bar" style="background:var(--red);height:100%;width:0%;transition:width .3s;"></div>
+        </div>
+        <div id="foto-progress-label" style="font-family:var(--fc);font-size:.7rem;letter-spacing:.08em;color:var(--muted);margin-top:.4rem;">Subiendo...</div>
+      </div>
       <div class="fg"><label>Etiqueta (opcional)</label><input type="text" id="foto-lbl" placeholder="Descripción de la foto"></div>
       <input type="hidden" id="foto-sec">
       <input type="hidden" id="foto-cid">
-      <button class="btn-p" onclick="saveFoto()">Agregar foto</button>
+      <button class="btn-p" id="foto-submit-btn" onclick="saveFoto()">Subir foto</button>
     </div>
   </div>
 </div>
@@ -673,6 +691,22 @@ const csIdx = {};
 // INIT
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
+  // Drag & drop on foto modal
+  const dropArea = document.getElementById('foto-drop-area');
+  if (dropArea) {
+    dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('dragover'); });
+    dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
+    dropArea.addEventListener('drop', e => {
+      e.preventDefault(); dropArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const dt = new DataTransfer(); dt.items.add(file);
+        const input = document.getElementById('foto-file-input');
+        input.files = dt.files;
+        previewFoto(input);
+      }
+    });
+  }
   const saved = sessionStorage.getItem('gm_u');
   if (saved) { try { currentUser = JSON.parse(saved); onLoggedIn(); } catch(e) {} }
   await Promise.all([loadHome(), loadDJs(), loadArts(), loadEvs()]);
@@ -986,8 +1020,81 @@ async function deleteEv(id,n) { if(!confirm('¿Eliminar "'+n+'"?'))return; await
 // ═══════════════════════════════════════════
 // FOTOS
 // ═══════════════════════════════════════════
-function openFotoModal(sec,cid) { sv('foto-sec',sec); sv('foto-cid',cid); sv('foto-url',''); sv('foto-lbl',''); openModal('modal-foto'); }
-async function saveFoto() { const url=gv('foto-url'); if(!url){notify('URL requerida',true);return;} const sec=gv('foto-sec'),cid=gv('foto-cid'); await DB.addFoto(sec,url,gv('foto-lbl')); closeModal('modal-foto'); notify('Foto agregada'); CS.init(cid, await DB.getFotos(sec)); }
+function openFotoModal(sec,cid) {
+  sv('foto-sec',sec); sv('foto-cid',cid); sv('foto-lbl','');
+  // Reset upload area
+  document.getElementById('foto-preview').style.display='none';
+  document.getElementById('foto-preview-img').src='';
+  document.getElementById('foto-drop-label').innerHTML='📁 Hacer click para seleccionar imagen<br><span style="font-size:.7rem;opacity:.6;">JPG, PNG, GIF, WEBP — máx 5MB</span>';
+  document.getElementById('foto-file-input').value='';
+  document.getElementById('foto-upload-progress').style.display='none';
+  document.getElementById('foto-progress-bar').style.width='0%';
+  window._fotoFile = null;
+  openModal('modal-foto');
+}
+
+function previewFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5*1024*1024) { notify('La imagen no puede superar 5MB', true); input.value=''; return; }
+  window._fotoFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('foto-preview-img').src = e.target.result;
+    document.getElementById('foto-preview').style.display = 'block';
+    document.getElementById('foto-drop-label').innerHTML = '✓ <strong>' + file.name + '</strong><br><span style="font-size:.7rem;opacity:.6;">' + (file.size/1024).toFixed(0) + ' KB — click para cambiar</span>';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveFoto() {
+  const file = window._fotoFile;
+  if (!file) { notify('Seleccioná una imagen primero', true); return; }
+  const sec = gv('foto-sec'), cid = gv('foto-cid'), lbl = gv('foto-lbl');
+
+  // Show progress
+  document.getElementById('foto-upload-progress').style.display='block';
+  document.getElementById('foto-progress-bar').style.width='30%';
+  document.getElementById('foto-progress-label').textContent='Subiendo...';
+  document.getElementById('foto-submit-btn').disabled=true;
+
+  try {
+    // Upload to Supabase Storage
+    const ext = file.name.split('.').pop().toLowerCase();
+    const filename = sec.replace(/:/g,'-') + '-' + Date.now() + '.' + ext;
+    const path = 'fotos/' + filename;
+
+    document.getElementById('foto-progress-bar').style.width='60%';
+
+    const { data: upData, error: upErr } = await sb().storage.from('groovemusic').upload(path, file, { cacheControl:'3600', upsert:false });
+    if (upErr) throw upErr;
+
+    document.getElementById('foto-progress-bar').style.width='85%';
+
+    // Get public URL
+    const { data: urlData } = sb().storage.from('groovemusic').getPublicUrl(path);
+    const publicUrl = urlData.publicUrl;
+
+    // Save to DB
+    await DB.addFoto(sec, publicUrl, lbl);
+
+    document.getElementById('foto-progress-bar').style.width='100%';
+    document.getElementById('foto-progress-label').textContent='¡Listo!';
+
+    setTimeout(async () => {
+      closeModal('modal-foto');
+      notify('Foto agregada');
+      window._fotoFile = null;
+      CS.init(cid, await DB.getFotos(sec));
+    }, 400);
+
+  } catch(err) {
+    console.error('Upload error:', err);
+    document.getElementById('foto-upload-progress').style.display='none';
+    document.getElementById('foto-submit-btn').disabled=false;
+    notify('Error al subir: ' + (err.message||err), true);
+  }
+}
 
 // ═══════════════════════════════════════════
 // GESTIÓN — EVENTOS
