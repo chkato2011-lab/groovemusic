@@ -63,7 +63,7 @@ input,textarea,select{font-family:inherit;}
 .c-track{display:flex;height:100%;transition:transform .5s ease;}
 .c-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;background:var(--gray2);}
 .c-slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-.c-lbl{position:relative;z-index:2;background:rgba(8,8,8,.65);padding:.35rem .85rem;font-family:var(--fc);font-size:.72rem;letter-spacing:.1em;border:1px solid rgba(232,0,26,.2);}
+.c-lbl{position:absolute;bottom:0;left:0;z-index:2;background:rgba(8,8,8,.72);padding:.35rem .85rem;font-family:var(--fc);font-size:.72rem;letter-spacing:.1em;border-top:1px solid rgba(232,0,26,.2);border-right:1px solid rgba(232,0,26,.2);}
 .c-empty{color:var(--gray4);font-family:var(--fc);font-size:.78rem;letter-spacing:.1em;}
 .c-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:40px;height:40px;background:rgba(8,8,8,.7);border:1px solid var(--gray4);color:var(--white);font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .c-btn:hover{background:var(--red);border-color:var(--red);}
@@ -826,6 +826,50 @@ function sv(id,v) { const e=document.getElementById(id); if(e)e.value=v??''; }
 // ═══════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// EMAIL 2FA — EmailJS (gratis, sin backend)
+// 1. Crear cuenta en emailjs.com
+// 2. Crear Email Service (Gmail) → copiar Service ID
+// 3. Crear Email Template con variables: {{to_email}}, {{to_name}}, {{code}}
+// 4. Copiar Public Key desde Account → API Keys
+// ═══════════════════════════════════════════
+const EMAILJS_SERVICE  = 'service_pxcx9dq';   // ej: service_abc123
+const EMAILJS_TEMPLATE = 'template_huhr7do';  // ej: template_xyz789
+const EMAILJS_KEY      = 'eDkOxTNxLm2a2fEGg';   // ej: aBcDeFgHiJkLmNoP
+
+async function send2FAEmail(toEmail, toName, code) {
+  try {
+    // Si EmailJS no está configurado, mostrar en pantalla como fallback
+    if (EMAILJS_SERVICE.startsWith('TU_')) {
+      document.getElementById('l-hint').textContent = '[DEMO - configurar EmailJS] Código: ' + code;
+      return;
+    }
+    const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        service_id:  EMAILJS_SERVICE,
+        template_id: EMAILJS_TEMPLATE,
+        user_id:     EMAILJS_KEY,
+        template_params: {
+          to_email: toEmail,
+          to_name:  toName || 'Administrador',
+          code:     code,
+          sitio:    'Groove Music UY'
+        }
+      })
+    });
+    if (res.ok) {
+      document.getElementById('l-hint').textContent = 'Código enviado a ' + toEmail;
+    } else {
+      // Fallback: mostrar en pantalla si falla el envío
+      document.getElementById('l-hint').textContent = '[Error email] Código: ' + code;
+    }
+  } catch(e) {
+    document.getElementById('l-hint').textContent = '[Error email] Código: ' + code;
+  }
+}
+
 async function doLogin() {
   const email = gv('l-mail').toLowerCase().trim(), pass = gv('l-pass').trim();
   document.getElementById('l-err').style.display='none';
@@ -838,8 +882,8 @@ async function doLogin() {
   document.getElementById('step-2fa').style.display='block';
   sv('l-code','');
   document.getElementById('l-code-err').style.display='none';
-  // DEMO: mostrar código en pantalla. En producción: enviar por email/SMS
-  document.getElementById('l-hint').textContent='[DEMO] Código: '+pending2FA;
+  // Enviar código por email via EmailJS
+  send2FAEmail(admin.email, admin.nombre, pending2FA);
   setTimeout(()=>document.getElementById('l-code').focus(),80);
 }
 function doVerify() {
@@ -1085,6 +1129,14 @@ async function saveFoto() {
       closeModal('modal-foto');
       notify('Foto agregada');
       window._fotoFile = null;
+      // Full reset for next upload
+      document.getElementById('foto-preview').style.display='none';
+      document.getElementById('foto-preview-img').src='';
+      document.getElementById('foto-drop-label').innerHTML='📁 Hacer click para seleccionar imagen<br><span style="font-size:.7rem;opacity:.6;">JPG, PNG, GIF, WEBP — máx 5MB</span>';
+      document.getElementById('foto-file-input').value='';
+      document.getElementById('foto-upload-progress').style.display='none';
+      document.getElementById('foto-progress-bar').style.width='0%';
+      document.getElementById('foto-submit-btn').disabled=false;
       CS.init(cid, await DB.getFotos(sec));
     }, 400);
 
