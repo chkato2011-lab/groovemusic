@@ -225,6 +225,55 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
 .btn-g:hover{background:var(--red2);}
 .muted{color:var(--muted);font-size:.8rem;}
 
+/* RADIO GROOVE */
+.radio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1rem;}
+.radio-card{background:var(--gray2);border:1px solid var(--gray3);overflow:hidden;transition:border-color .2s;}
+.radio-card:hover{border-color:var(--red);}
+.radio-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--gray3);}
+.radio-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.radio-card:hover .radio-thumb img{transform:scale(1.04);}
+.radio-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);opacity:0;transition:opacity .2s;}
+.radio-card:hover .radio-play-btn{opacity:1;}
+.radio-play-btn svg{width:48px;height:48px;fill:var(--white);}
+.radio-info{padding:1rem;}
+.radio-title{font-family:var(--fd);font-size:1.2rem;margin-bottom:.35rem;}
+.radio-desc{font-size:.82rem;color:var(--muted);line-height:1.6;}
+
+/* EVENTO DETAIL PAGE */
+.ev-detail-page{display:none;position:fixed;inset:0;background:var(--black);z-index:800;overflow-y:auto;padding-top:60px;}
+.ev-detail-inner{max-width:1100px;margin:0 auto;padding:2.5rem 2rem;}
+.ev-detail-hero{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-bottom:3rem;}
+.ev-detail-title{font-family:var(--fd);font-size:clamp(3rem,8vw,6rem);line-height:.9;margin-bottom:1rem;}
+.ev-detail-meta{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.5rem;}
+.ev-detail-meta span{font-family:var(--fc);font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.ev-detail-meta strong{color:var(--white);}
+.ev-back{display:flex;align-items:center;gap:.5rem;font-family:var(--fc);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);cursor:pointer;margin-bottom:2rem;transition:color .2s;background:transparent;border:none;}
+.ev-back:hover{color:var(--red);}
+.ev-tabs{display:flex;border-bottom:1px solid var(--gray3);margin-bottom:2rem;gap:0;}
+.ev-tab{font-family:var(--fc);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;padding:.65rem 1.35rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.ev-tab.active{color:var(--red);border-bottom-color:var(--red);}
+.ev-tab:hover:not(.active){color:var(--white);}
+.ev-tab-content{display:none;}
+.ev-tab-content.active{display:block;}
+
+/* RRPP EVENTO TABLE */
+.rrpp-ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1rem;}
+.rrpp-ev-card{background:var(--gray2);border:1px solid var(--gray3);padding:1.1rem 1.25rem;}
+.rrpp-ev-name{font-family:var(--fd);font-size:1.3rem;margin-bottom:.3rem;}
+.rrpp-ev-meta{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;}
+.rrpp-ev-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.rrpp-ev-stat{background:var(--gray3);padding:.6rem .75rem;}
+.rrpp-ev-stat-lbl{font-family:var(--fc);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;}
+.rrpp-ev-stat-val{font-family:var(--fd);font-size:1.4rem;}
+
+/* GASTOS EVENTO */
+.gastos-total{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;background:var(--gray2);border:1px solid var(--gray3);margin-top:1rem;}
+
+@media(max-width:900px){
+  .ev-detail-hero{grid-template-columns:1fr;}
+  .radio-grid{grid-template-columns:1fr;}
+}
+
 /* FOTO UPLOAD */
 #foto-drop-area:hover { border-color: var(--red) !important; }
 #foto-drop-area.dragover { border-color: var(--red); background: rgba(232,0,26,.05); }
@@ -251,6 +300,7 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
     <li><a onclick="navTo('quienes')">Quiénes Somos</a></li>
     <li><a onclick="navTo('artistas')">Artistas</a></li>
     <li><a onclick="navTo('eventos')">Eventos</a></li>
+    <li><a onclick="navTo('radio')">Radio</a></li>
   </ul>
   <div id="nav-right">
     <button id="btn-gestion" onclick="showGestion()">⚙ Gestión</button>
@@ -319,6 +369,29 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
       <h2>PRÓXIMOS<br>EVENTOS</h2>
       <div class="admin-bar"><button class="btn-as" onclick="openEventoModal()">+ Agregar evento</button></div>
       <div id="event-list"><div class="spin-wrap"><div class="spinner"></div><span>Cargando</span></div></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- EVENTOS PASADOS -->
+  <section id="eventos-pasados">
+    <div class="section">
+      <div class="sec-lbl">Archivo</div>
+      <h2>EVENTOS<br>PASADOS</h2>
+      <div id="event-list-past"><div class="spin-wrap"><div class="spinner"></div><span>Cargando</span></div></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- RADIO GROOVE -->
+  <section id="radio">
+    <div class="section">
+      <div class="sec-lbl">Online</div>
+      <h2>RADIO<br>GROOVE</h2>
+      <div class="admin-bar"><button class="btn-as" onclick="openRadioModal()">+ Agregar episodio</button></div>
+      <div id="radio-list"><div class="spin-wrap"><div class="spinner"></div><span>Cargando</span></div></div>
     </div>
   </section>
 
@@ -434,15 +507,17 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
         </div>
         <!-- RRPP -->
         <div id="ta-rrpp" class="tab-content active">
-          <div class="f-row">
+          <div class="f-row" style="flex-wrap:wrap;">
             <div class="fg"><label>Nombre</label><input type="text" id="rrpp-nom" placeholder="Nombre"></div>
             <div class="fg"><label>Apellido</label><input type="text" id="rrpp-ape" placeholder="Apellido"></div>
             <div class="fg"><label>Email</label><input type="email" id="rrpp-mail" placeholder="email@..."></div>
             <div class="fg"><label>Teléfono</label><input type="tel" id="rrpp-tel" placeholder="+598..."></div>
             <div class="fg" style="flex:2;"><label>Link Ticketera</label><input type="url" id="rrpp-lnk" placeholder="https://..."></div>
+            <div class="fg"><label>Banco</label><input type="text" id="rrpp-banco" placeholder="BROU, Itaú..."></div>
+            <div class="fg"><label>Nro. de cuenta</label><input type="text" id="rrpp-cuenta" placeholder="000-000000-00"></div>
             <button class="btn-add-g" onclick="addRRPP()">Agregar</button>
           </div>
-          <table class="dt"><thead><tr><th>Nombre</th><th>Apellido</th><th>Email</th><th>Teléfono</th><th>Link</th><th></th></tr></thead><tbody id="rrpp-body"></tbody></table>
+          <table class="dt" style="font-size:.8rem;"><thead><tr><th>Nombre</th><th>Apellido</th><th>Email</th><th>Teléfono</th><th>Banco</th><th>Cuenta</th><th>Link</th><th></th></tr></thead><tbody id="rrpp-body"></tbody></table>
         </div>
         <!-- CLIENTES -->
         <div id="ta-cli" class="tab-content">
@@ -622,6 +697,122 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
   </div>
 </div>
 
+<!-- EVENTO DETAIL PAGE -->
+<div class="ev-detail-page" id="ev-detail-page">
+  <div class="ev-detail-inner">
+    <button class="ev-back" onclick="closeEvDetail()">← Volver a eventos</button>
+    <div class="ev-detail-hero">
+      <div>
+        <div class="ev-detail-title" id="evd-nombre"></div>
+        <div class="ev-detail-meta">
+          <span>📍 <strong id="evd-lugar"></strong></span>
+          <span>📅 <strong id="evd-fecha"></strong></span>
+          <span id="evd-lineup-wrap" style="display:none;">🎵 <strong id="evd-lineup"></strong></span>
+          <span id="evd-rider-wrap" style="display:none;">🔊 <strong id="evd-rider"></strong></span>
+        </div>
+        <p id="evd-info" style="color:var(--muted);font-size:.9rem;line-height:1.8;white-space:pre-wrap;"></p>
+        <div class="admin-bar" style="margin-top:1rem;">
+          <button class="btn-e" onclick="editEvFromDetail()">✎ Editar evento</button>
+        </div>
+      </div>
+      <div>
+        <div class="carousel-wrap" style="aspect-ratio:16/9;">
+          <div class="c-track" id="track-evd-main"></div>
+          <button class="c-btn prev" onclick="CS.go('evd-main',-1)">‹</button>
+          <button class="c-btn next" onclick="CS.go('evd-main',1)">›</button>
+          <div class="c-dots" id="dots-evd-main"></div>
+        </div>
+        <div class="admin-bar"><button class="btn-as" onclick="openFotoModal('evento:'+currentEvId,'evd-main')">+ Foto</button></div>
+      </div>
+    </div>
+
+    <div class="ev-tabs">
+      <div class="ev-tab active" onclick="switchEvTab(this,'evt-movimientos')">💰 Movimientos</div>
+      <div class="ev-tab" onclick="switchEvTab(this,'evt-gastos')">📋 Gastos</div>
+      <div class="ev-tab" onclick="switchEvTab(this,'evt-rrpp')">👥 RRPP</div>
+    </div>
+
+    <!-- MOVIMIENTOS DEL EVENTO -->
+    <div id="evt-movimientos" class="ev-tab-content active">
+      <div class="f-row" style="flex-wrap:wrap;">
+        <div class="fg" style="flex:3;min-width:180px;"><label>Descripción</label><input type="text" id="evd-mov-desc" placeholder="Descripción"></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Monto $</label><input type="number" id="evd-mov-monto" placeholder="0"></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Tipo</label><select id="evd-mov-tipo"><option value="in">↑ Entrada</option><option value="out">↓ Salida</option></select></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Fecha</label><input type="date" id="evd-mov-fecha"></div>
+        <button class="btn-add-g" onclick="addEvMovimiento()">Agregar</button>
+      </div>
+      <table class="dt"><thead><tr><th>Fecha</th><th>Descripción</th><th>Tipo</th><th>Monto</th><th></th></tr></thead><tbody id="evd-mov-body"></tbody></table>
+      <div class="total-row"><span class="total-lbl">Balance del evento</span><span class="total-amt" id="evd-total-bal">$0</span></div>
+    </div>
+
+    <!-- GASTOS DEL EVENTO -->
+    <div id="evt-gastos" class="ev-tab-content">
+      <div class="f-row" style="flex-wrap:wrap;">
+        <div class="fg" style="flex:3;min-width:180px;"><label>Concepto *</label><input type="text" id="evd-gasto-desc" placeholder="Audio, DJ, Alquiler..."></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Monto $</label><input type="number" id="evd-gasto-monto" placeholder="0"></div>
+        <div class="fg" style="flex:1.5;min-width:140px;"><label>Estado</label><select id="evd-gasto-estado"><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option></select></div>
+        <button class="btn-add-g" onclick="addEvGasto()">Agregar</button>
+      </div>
+      <table class="dt">
+        <thead><tr><th>Concepto</th><th>Estado</th><th>Monto</th><th>Registrar pago</th><th></th></tr></thead>
+        <tbody id="evd-gastos-body"></tbody>
+      </table>
+      <div class="gastos-total"><span class="total-lbl">Total gastos</span><span class="total-amt c-out" id="evd-gastos-total">$0</span></div>
+    </div>
+
+    <!-- RRPP DEL EVENTO -->
+    <div id="evt-rrpp" class="ev-tab-content">
+      <div style="margin-bottom:1.5rem;">
+        <button class="btn-g" style="margin-bottom:0;" onclick="openEvRRPPModal()">+ Asignar RRPP a este evento</button>
+      </div>
+      <div class="rrpp-ev-grid" id="evd-rrpp-grid"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: RRPP DEL EVENTO -->
+<div class="modal-overlay" id="modal-ev-rrpp">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal('modal-ev-rrpp')">✕</button>
+    <h2>ASIGNAR RRPP</h2>
+    <p class="modal-sub">Asignar un RRPP a este evento</p>
+    <div style="margin-top:1.5rem;">
+      <div class="fg"><label>Seleccionar RRPP</label>
+        <select id="ev-rrpp-select"><option value="">— Seleccionar —</option></select>
+      </div>
+      <div class="fg"><label>Entradas vendidas</label><input type="number" id="ev-rrpp-entradas" placeholder="0" value="0"></div>
+      <div class="fg"><label>Invitaciones validadas</label><input type="number" id="ev-rrpp-invitaciones" placeholder="0" value="0"></div>
+      <input type="hidden" id="ev-rrpp-edit-id">
+      <button class="btn-p" onclick="saveEvRRPP()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RADIO GROOVE -->
+<div class="modal-overlay" id="modal-radio">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal('modal-radio')">✕</button>
+    <h2 id="radio-modal-title">AGREGAR EPISODIO</h2>
+    <p class="modal-sub">Foto de portada con enlace a YouTube</p>
+    <div style="margin-top:1.5rem;">
+      <div class="fg"><label>Título *</label><input type="text" id="radio-titulo" placeholder="Groove Session #01"></div>
+      <div class="fg"><label>Descripción</label><textarea id="radio-desc" placeholder="Descripción del episodio..."></textarea></div>
+      <div class="fg"><label>Link de YouTube *</label><input type="url" id="radio-yt" placeholder="https://youtube.com/watch?v=..."></div>
+      <div style="margin-bottom:.75rem;">
+        <label style="font-family:var(--fc);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.35rem;">Imagen de portada</label>
+        <div id="radio-drop" onclick="document.getElementById('radio-file-input').click()" style="border:2px dashed var(--gray4);padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--gray4)'">
+          <div id="radio-preview" style="display:none;margin-bottom:.5rem;"><img id="radio-preview-img" style="max-height:100px;margin:0 auto;object-fit:contain;"></div>
+          <div id="radio-drop-label" style="font-family:var(--fc);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">📁 Click para seleccionar imagen</div>
+          <input type="file" id="radio-file-input" accept="image/*" style="display:none;" onchange="previewRadio(this)">
+        </div>
+      </div>
+      <input type="hidden" id="radio-edit-id">
+      <button class="btn-p" id="radio-submit-btn" onclick="saveRadio()">Guardar episodio</button>
+    </div>
+  </div>
+</div>
+
 <!-- NOTIFY -->
 <div id="notif" class="notif"></div>
 
@@ -709,7 +900,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   const saved = sessionStorage.getItem('gm_u');
   if (saved) { try { currentUser = JSON.parse(saved); onLoggedIn(); } catch(e) {} }
-  await Promise.all([loadHome(), loadDJs(), loadArts(), loadEvs()]);
+  await Promise.all([loadHome(), loadDJs(), loadArts(), loadEvs(), loadRadio()]);
 });
 
 // ═══════════════════════════════════════════
@@ -833,9 +1024,9 @@ function sv(id,v) { const e=document.getElementById(id); if(e)e.value=v??''; }
 // 3. Crear Email Template con variables: {{to_email}}, {{to_name}}, {{code}}
 // 4. Copiar Public Key desde Account → API Keys
 // ═══════════════════════════════════════════
-const EMAILJS_SERVICE  = 'service_pxcx9dq';   // ej: service_abc123
-const EMAILJS_TEMPLATE = 'template_huhr7do';  // ej: template_xyz789
-const EMAILJS_KEY      = 'eDkOxTNxLm2a2fEGg';   // ej: aBcDeFgHiJkLmNoP
+const EMAILJS_SERVICE  = 'service_pxcx9dq';
+const EMAILJS_TEMPLATE = 'template_huhr7do';
+const EMAILJS_KEY      = 'eDkOxTNxLm2a2fEGg';
 
 async function send2FAEmail(toEmail, toName, code) {
   try {
@@ -1018,12 +1209,8 @@ function toggleAcc(id) { const el=document.getElementById('acc-'+id); if(el)el.c
 // ═══════════════════════════════════════════
 // EVENTOS (PÚBLICO)
 // ═══════════════════════════════════════════
-async function loadEvs() {
-  const evs = await DB.getEvs();
-  const c = document.getElementById('event-list');
-  if (!evs.length) { c.innerHTML='<p class="empty-msg">No hay eventos cargados.</p>'; return; }
-  c.innerHTML = evs.map(ev=>`
-    <div class="acc-item" id="acc-ev${ev.id}">
+function buildEvCard(ev, showPast=false) {
+  return `<div class="acc-item" id="acc-ev${ev.id}">
       <div class="acc-hdr" onclick="toggleAcc('ev${ev.id}')">
         <h3>${ev.nombre}</h3>
         <div class="ev-meta">${fmtDate(ev.fecha)}<br>${ev.lugar||''}</div>
@@ -1036,6 +1223,9 @@ async function loadEvs() {
             ${ev.fecha?`<div class="ev-row"><span class="ev-lbl">Fecha</span><span>${fmtDate(ev.fecha)}</span></div>`:''}
             ${ev.lineup?`<div class="ev-row"><span class="ev-lbl">Line Up</span><span>${ev.lineup}</span></div>`:''}
             ${ev.info?`<div class="ev-row"><span class="ev-lbl">Info</span><span>${ev.info}</span></div>`:''}
+            <div style="margin-top:1rem;">
+              <button onclick="openEvDetail('${ev.id}')" style="font-family:var(--fc);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;background:var(--red);color:var(--white);border:none;padding:.5rem 1.2rem;cursor:pointer;">Ver detalle completo →</button>
+            </div>
             <div class="admin-bar">
               <button class="btn-e" onclick="editEv('${ev.id}')">✎ Editar</button>
               <button class="btn-d" onclick="deleteEv('${ev.id}','${ev.nombre}')">✕ Eliminar</button>
@@ -1052,8 +1242,21 @@ async function loadEvs() {
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+}
+
+async function loadEvs() {
+  const evs = await DB.getEvs();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const future = evs.filter(ev => !ev.fecha || new Date(ev.fecha+'T00:00:00') >= today);
+  const past   = evs.filter(ev => ev.fecha && new Date(ev.fecha+'T00:00:00') < today);
+
+  const cf = document.getElementById('event-list');
+  const cp = document.getElementById('event-list-past');
+
+  cf.innerHTML = future.length ? future.map(ev=>buildEvCard(ev)).join('') : '<p class="empty-msg">No hay próximos eventos.</p>';
+  if(cp) cp.innerHTML = past.length ? past.map(ev=>buildEvCard(ev,true)).join('') : '<p class="empty-msg">No hay eventos pasados.</p>';
+
   for (const ev of evs) CS.init('ev'+ev.id, await DB.getFotos('evento:'+ev.id));
 }
 function openEventoModal() { sv('ev-id',''); sv('ev-nom',''); sv('ev-lug',''); sv('ev-fecha',''); sv('ev-info',''); document.getElementById('ev-modal-title').textContent='AGREGAR EVENTO'; openModal('modal-ev'); }
@@ -1246,14 +1449,15 @@ async function loadRRPP() {
   if (!tb) return;
   tb.innerHTML = lista.map(r=>`<tr>
     <td>${r.nombre}</td><td>${r.apellido||''}</td><td>${r.email||''}</td><td>${r.telefono||''}</td>
+    <td>${r.banco||'—'}</td><td>${r.cuenta||'—'}</td>
     <td>${r.link_ticketera?`<a href="${r.link_ticketera}" target="_blank" class="lnk">Ver ↗</a>`:'—'}</td>
     <td><button class="btn-x" onclick="delRRPP('${r.id}')">✕</button></td>
-  </tr>`).join('') || '<tr><td colspan="6" class="empty-td">Sin RRPP registrados</td></tr>';
+  </tr>`).join('') || '<tr><td colspan="8" class="empty-td">Sin RRPP registrados</td></tr>';
 }
 async function addRRPP() {
   const n=gv('rrpp-nom'); if(!n){notify('Nombre requerido',true);return;}
-  await DB.addRRPP({nombre:n,apellido:gv('rrpp-ape'),email:gv('rrpp-mail'),telefono:gv('rrpp-tel'),link_ticketera:gv('rrpp-lnk')});
-  ['rrpp-nom','rrpp-ape','rrpp-mail','rrpp-tel','rrpp-lnk'].forEach(id=>sv(id,''));
+  await DB.addRRPP({nombre:n,apellido:gv('rrpp-ape'),email:gv('rrpp-mail'),telefono:gv('rrpp-tel'),link_ticketera:gv('rrpp-lnk'),banco:gv('rrpp-banco'),cuenta:gv('rrpp-cuenta')});
+  ['rrpp-nom','rrpp-ape','rrpp-mail','rrpp-tel','rrpp-lnk','rrpp-banco','rrpp-cuenta'].forEach(id=>sv(id,''));
   loadRRPP(); notify('RRPP agregado');
 }
 async function delRRPP(id) { await DB.delRRPP(id); loadRRPP(); }
@@ -1349,6 +1553,311 @@ async function saveAdmin() {
   closeModal('modal-na'); notify(id?'Admin actualizado':'Admin agregado'); loadAdmins();
 }
 async function delAdmin(id) { if(!confirm('¿Eliminar este administrador?'))return; await DB.delAdmin(id); loadAdmins(); notify('Admin eliminado'); }
+
+// ═══════════════════════════════════════════
+// EVENTO DETAIL PAGE
+// ═══════════════════════════════════════════
+let currentEvId = null;
+let currentEvData = null;
+
+async function openEvDetail(id) {
+  currentEvId = id;
+  const evs = await DB.getEvs();
+  const ev = evs.find(x=>x.id===id);
+  if (!ev) return;
+  currentEvData = ev;
+
+  document.getElementById('evd-nombre').textContent = ev.nombre;
+  document.getElementById('evd-lugar').textContent = ev.lugar||'—';
+  document.getElementById('evd-fecha').textContent = fmtDate(ev.fecha);
+  document.getElementById('evd-info').textContent = ev.info||'';
+  
+  const lw = document.getElementById('evd-lineup-wrap');
+  if (ev.lineup) { lw.style.display=''; document.getElementById('evd-lineup').textContent=ev.lineup; }
+  else lw.style.display='none';
+  
+  const rw = document.getElementById('evd-rider-wrap');
+  if (ev.rider) { rw.style.display=''; document.getElementById('evd-rider').textContent=ev.rider; }
+  else rw.style.display='none';
+
+  // Load carousel
+  const fotos = await DB.getFotos('evento:'+id);
+  CS.init('evd-main', fotos);
+
+  // Show page
+  document.getElementById('ev-detail-page').style.display='block';
+  document.getElementById('nav').style.zIndex='799';
+  window.scrollTo(0,0);
+
+  // Load tabs
+  switchEvTab(document.querySelector('.ev-tab'), 'evt-movimientos');
+  loadEvMovimientos();
+}
+
+function closeEvDetail() {
+  document.getElementById('ev-detail-page').style.display='none';
+  document.getElementById('nav').style.zIndex='900';
+  currentEvId = null;
+}
+
+function editEvFromDetail() {
+  if (!currentEvData) return;
+  sv('ev-id', currentEvData.id);
+  sv('ev-nom', currentEvData.nombre);
+  sv('ev-lug', currentEvData.lugar);
+  sv('ev-fecha', currentEvData.fecha);
+  sv('ev-info', currentEvData.info);
+  document.getElementById('ev-modal-title').textContent='EDITAR EVENTO';
+  openModal('modal-ev');
+}
+
+function switchEvTab(el, tid) {
+  document.querySelectorAll('.ev-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.ev-tab-content').forEach(c=>c.classList.remove('active'));
+  const tc = document.getElementById(tid);
+  if(tc) tc.classList.add('active');
+  if(tid==='evt-movimientos') loadEvMovimientos();
+  if(tid==='evt-gastos') loadEvGastos();
+  if(tid==='evt-rrpp') loadEvRRPP();
+}
+
+// ── MOVIMIENTOS DEL EVENTO ──────────────────
+async function loadEvMovimientos() {
+  if(!currentEvId) return;
+  const all = await DB.getMov();
+  const movs = all.filter(m=>m.evento_id===currentEvId);
+  const tb = document.getElementById('evd-mov-body');
+  if(!tb) return;
+  tb.innerHTML = movs.map(m=>`<tr>
+    <td>${m.fecha||'—'}</td><td>${m.descripcion}</td>
+    <td><span class="badge ${m.tipo==='in'?'b-in':'b-out'}">${m.tipo==='in'?'↑ Entrada':'↓ Salida'}</span></td>
+    <td class="num ${m.tipo==='in'?'c-in':'c-out'}">${m.tipo==='in'?'+':'−'}$${Number(m.monto).toLocaleString('es-UY')}</td>
+    <td><button class="btn-x" onclick="delEvMov('${m.id}')">✕</button></td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty-td">Sin movimientos</td></tr>';
+  const tot=movs.reduce((a,m)=>m.tipo==='in'?a+ +m.monto:a- +m.monto,0);
+  const te=document.getElementById('evd-total-bal');
+  if(te){te.textContent='$'+Math.abs(tot).toLocaleString('es-UY');te.className='total-amt '+(tot>=0?'c-in':'c-out');}
+}
+
+async function addEvMovimiento() {
+  if(!currentEvId) return;
+  const d=gv('evd-mov-desc'),m=gv('evd-mov-monto'),t=gv('evd-mov-tipo'),f=gv('evd-mov-fecha')||new Date().toISOString().split('T')[0];
+  if(!d||!m){notify('Completá descripción y monto',true);return;}
+  // Save with evento_id tag in description for filtering
+  await sb().from('movimientos').insert({descripcion:'['+currentEvData.nombre+'] '+d, monto:+m, tipo:t, fecha:f, evento_id:currentEvId});
+  sv('evd-mov-desc',''); sv('evd-mov-monto','');
+  loadEvMovimientos();
+  loadMov(); // refresh global
+  notify('Movimiento registrado');
+}
+
+async function delEvMov(id) {
+  await DB.delMov(id);
+  loadEvMovimientos();
+  loadMov();
+}
+
+// ── GASTOS DEL EVENTO ──────────────────────
+async function loadEvGastos() {
+  if(!currentEvId) return;
+  const {data} = await sb().from('gastos_evento').select('*').eq('evento_id',currentEvId).order('created_at');
+  const gastos = data||[];
+  const tb = document.getElementById('evd-gastos-body');
+  if(!tb) return;
+  tb.innerHTML = gastos.map(g=>`<tr>
+    <td>${g.concepto}</td>
+    <td><span class="badge ${g.estado==='pagado'?'b-in':'b-out'}">${g.estado}</span></td>
+    <td class="num">$${Number(g.monto).toLocaleString('es-UY')}</td>
+    <td>${g.estado!=='pagado'?`<button class="btn-reg" onclick="pagarGasto('${g.id}','${g.concepto}',${g.monto})">✓ Pagar</button>`:'<span style="color:var(--green);font-family:var(--fc);font-size:.7rem;">PAGADO</span>'}</td>
+    <td><button class="btn-x" onclick="delGasto('${g.id}')">✕</button></td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty-td">Sin gastos registrados</td></tr>';
+  const tot = gastos.reduce((a,g)=>a+ +g.monto,0);
+  const te=document.getElementById('evd-gastos-total');
+  if(te) te.textContent='$'+tot.toLocaleString('es-UY');
+}
+
+async function addEvGasto() {
+  if(!currentEvId) return;
+  const desc=gv('evd-gasto-desc'),monto=gv('evd-gasto-monto'),estado=gv('evd-gasto-estado');
+  if(!desc||!monto){notify('Completá concepto y monto',true);return;}
+  await sb().from('gastos_evento').insert({evento_id:currentEvId,concepto:desc,monto:+monto,estado});
+  sv('evd-gasto-desc',''); sv('evd-gasto-monto','');
+  loadEvGastos(); notify('Gasto agregado');
+}
+
+async function pagarGasto(id,concepto,monto) {
+  await sb().from('gastos_evento').update({estado:'pagado'}).eq('id',id);
+  // Register as movement
+  await sb().from('movimientos').insert({descripcion:'[Gasto '+currentEvData.nombre+'] '+concepto,monto:+monto,tipo:'out',fecha:new Date().toISOString().split('T')[0],evento_id:currentEvId});
+  loadEvGastos(); loadEvMovimientos(); loadMov();
+  notify('Gasto pagado y registrado en movimientos');
+}
+
+async function delGasto(id) {
+  await sb().from('gastos_evento').delete().eq('id',id);
+  loadEvGastos();
+}
+
+// ── RRPP DEL EVENTO ────────────────────────
+async function loadEvRRPP() {
+  if(!currentEvId) return;
+  const {data} = await sb().from('evento_rrpp').select('*,rrpp(nombre,apellido,email,telefono,banco,cuenta)').eq('evento_id',currentEvId);
+  const lista = data||[];
+  const container = document.getElementById('evd-rrpp-grid');
+  if(!container) return;
+  container.innerHTML = lista.map(r=>`
+    <div class="rrpp-ev-card">
+      <div class="rrpp-ev-name">${r.rrpp?.nombre||''} ${r.rrpp?.apellido||''}</div>
+      <div class="rrpp-ev-meta">${r.rrpp?.email||''} · ${r.rrpp?.telefono||''}</div>
+      ${r.rrpp?.banco?`<div class="rrpp-ev-meta" style="margin-bottom:.5rem;">🏦 ${r.rrpp.banco} — ${r.rrpp.cuenta||''}</div>`:''}
+      <div class="rrpp-ev-stats">
+        <div class="rrpp-ev-stat">
+          <div class="rrpp-ev-stat-lbl">Entradas vendidas</div>
+          <div class="rrpp-ev-stat-val">${r.entradas_vendidas||0}</div>
+        </div>
+        <div class="rrpp-ev-stat">
+          <div class="rrpp-ev-stat-lbl">Invitaciones</div>
+          <div class="rrpp-ev-stat-val">${r.invitaciones_validadas||0}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.75rem;">
+        <button class="btn-ie" onclick="editEvRRPP('${r.id}','${r.rrpp_id}',${r.entradas_vendidas||0},${r.invitaciones_validadas||0})">✎ Editar</button>
+        <button class="btn-x" onclick="delEvRRPP('${r.id}')">✕</button>
+      </div>
+    </div>
+  `).join('') || '<p class="empty-msg">No hay RRPP asignados a este evento.</p>';
+}
+
+async function openEvRRPPModal() {
+  // Populate RRPP select
+  const rrpps = await DB.getRRPP();
+  const sel = document.getElementById('ev-rrpp-select');
+  sel.innerHTML = '<option value="">— Seleccionar —</option>' + rrpps.map(r=>`<option value="${r.id}">${r.nombre} ${r.apellido||''}</option>`).join('');
+  sv('ev-rrpp-edit-id',''); sv('ev-rrpp-entradas','0'); sv('ev-rrpp-invitaciones','0');
+  openModal('modal-ev-rrpp');
+}
+
+async function editEvRRPP(id, rrppId, entradas, invitaciones) {
+  const rrpps = await DB.getRRPP();
+  const sel = document.getElementById('ev-rrpp-select');
+  sel.innerHTML = '<option value="">— Seleccionar —</option>' + rrpps.map(r=>`<option value="${r.id}">${r.nombre} ${r.apellido||''}</option>`).join('');
+  sel.value = rrppId;
+  sv('ev-rrpp-edit-id',id);
+  sv('ev-rrpp-entradas',entradas);
+  sv('ev-rrpp-invitaciones',invitaciones);
+  openModal('modal-ev-rrpp');
+}
+
+async function saveEvRRPP() {
+  if(!currentEvId) return;
+  const rrppId=gv('ev-rrpp-select'),entradas=+gv('ev-rrpp-entradas'),inv=+gv('ev-rrpp-invitaciones'),editId=gv('ev-rrpp-edit-id');
+  if(!rrppId){notify('Seleccioná un RRPP',true);return;}
+  if(editId) {
+    await sb().from('evento_rrpp').update({entradas_vendidas:entradas,invitaciones_validadas:inv}).eq('id',editId);
+  } else {
+    await sb().from('evento_rrpp').insert({evento_id:currentEvId,rrpp_id:rrppId,entradas_vendidas:entradas,invitaciones_validadas:inv});
+  }
+  closeModal('modal-ev-rrpp');
+  loadEvRRPP(); notify('RRPP guardado');
+}
+
+async function delEvRRPP(id) {
+  await sb().from('evento_rrpp').delete().eq('id',id);
+  loadEvRRPP();
+}
+
+// ═══════════════════════════════════════════
+// RADIO GROOVE
+// ═══════════════════════════════════════════
+async function loadRadio() {
+  const {data} = await sb().from('radio').select('*').order('created_at',{ascending:false});
+  const lista = data||[];
+  const c = document.getElementById('radio-list');
+  if(!c) return;
+  if(!lista.length){c.innerHTML='<p class="empty-msg">No hay episodios cargados aún.</p>';return;}
+  c.innerHTML = `<div class="radio-grid">${lista.map(r=>`
+    <div class="radio-card">
+      <a href="${r.youtube_url||'#'}" target="_blank">
+        <div class="radio-thumb">
+          ${r.imagen_url?`<img src="${r.imagen_url}" alt="${r.titulo}">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--gray3);color:var(--gray4);font-size:3rem;">▶</div>'}
+          <div class="radio-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+      </a>
+      <div class="radio-info">
+        <div class="radio-title">${r.titulo}</div>
+        <div class="radio-desc">${r.descripcion||''}</div>
+        <div class="admin-bar" style="margin-top:.75rem;">
+          <button class="btn-e" onclick="editRadio('${r.id}')">✎ Editar</button>
+          <button class="btn-d" onclick="deleteRadio('${r.id}')">✕ Eliminar</button>
+        </div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function openRadioModal() {
+  sv('radio-titulo',''); sv('radio-desc',''); sv('radio-yt',''); sv('radio-edit-id','');
+  document.getElementById('radio-preview').style.display='none';
+  document.getElementById('radio-preview-img').src='';
+  document.getElementById('radio-drop-label').textContent='📁 Click para seleccionar imagen';
+  document.getElementById('radio-file-input').value='';
+  document.getElementById('radio-submit-btn').disabled=false;
+  window._radioFile=null;
+  document.getElementById('radio-modal-title').textContent='AGREGAR EPISODIO';
+  openModal('modal-radio');
+}
+
+async function editRadio(id) {
+  const {data} = await sb().from('radio').select('*').eq('id',id).single();
+  if(!data) return;
+  sv('radio-titulo',data.titulo); sv('radio-desc',data.descripcion||''); sv('radio-yt',data.youtube_url||''); sv('radio-edit-id',id);
+  window._radioFile=null;
+  if(data.imagen_url){document.getElementById('radio-preview-img').src=data.imagen_url;document.getElementById('radio-preview').style.display='block';}
+  document.getElementById('radio-modal-title').textContent='EDITAR EPISODIO';
+  openModal('modal-radio');
+}
+
+function previewRadio(input) {
+  const file=input.files[0]; if(!file)return;
+  window._radioFile=file;
+  const reader=new FileReader();
+  reader.onload=e=>{document.getElementById('radio-preview-img').src=e.target.result;document.getElementById('radio-preview').style.display='block';document.getElementById('radio-drop-label').textContent='✓ '+file.name;};
+  reader.readAsDataURL(file);
+}
+
+async function saveRadio() {
+  const titulo=gv('radio-titulo'),yt=gv('radio-yt'),editId=gv('radio-edit-id');
+  if(!titulo){notify('El título es requerido',true);return;}
+  document.getElementById('radio-submit-btn').disabled=true;
+  let imagen_url = null;
+  if(window._radioFile) {
+    const ext=window._radioFile.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'');
+    const path='radio/radio-'+Date.now()+'.'+ext;
+    const {error:ue}=await sb().storage.from('groovemusic').upload(path,window._radioFile,{cacheControl:'3600',upsert:false,contentType:window._radioFile.type});
+    if(ue){notify('Error subiendo imagen: '+ue.message,true);document.getElementById('radio-submit-btn').disabled=false;return;}
+    imagen_url=sb().storage.from('groovemusic').getPublicUrl(path).data.publicUrl;
+  }
+  const payload={titulo,descripcion:gv('radio-desc'),youtube_url:yt};
+  if(imagen_url) payload.imagen_url=imagen_url;
+  if(editId){await sb().from('radio').update(payload).eq('id',editId);}
+  else{await sb().from('radio').insert(payload);}
+  closeModal('modal-radio');
+  document.getElementById('radio-submit-btn').disabled=false;
+  window._radioFile=null;
+  notify(editId?'Episodio actualizado':'Episodio agregado');
+  loadRadio();
+}
+
+async function deleteRadio(id) {
+  if(!confirm('¿Eliminar este episodio?'))return;
+  await sb().from('radio').delete().eq('id',id);
+  loadRadio(); notify('Episodio eliminado');
+}
+
+// ═══════════════════════════════════════════
+// RRPP GLOBAL - updated with banco/cuenta
+// ═══════════════════════════════════════════
 </script>
 </body>
 </html>
