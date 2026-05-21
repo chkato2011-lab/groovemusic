@@ -274,6 +274,12 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
   .radio-grid{grid-template-columns:1fr;}
 }
 
+/* GASTOS CHECKBOX */
+input[type=checkbox] { accent-color: var(--green); }
+.rrpp-ev-stat-val { font-family:var(--fd); font-size:1.6rem; min-width:2rem; text-align:center; display:inline-block; }
+.rrpp-ev-card { transition: border-color .2s; }
+.rrpp-ev-card:hover { border-color: var(--red); }
+
 /* FOTO UPLOAD */
 #foto-drop-area:hover { border-color: var(--red) !important; }
 #foto-drop-area.dragover { border-color: var(--red); background: rgba(232,0,26,.05); }
@@ -747,23 +753,36 @@ footer{background:var(--gray);border-top:1px solid var(--gray3);padding:3rem 2re
 
     <!-- GASTOS DEL EVENTO -->
     <div id="evt-gastos" class="ev-tab-content">
-      <div class="f-row" style="flex-wrap:wrap;">
-        <div class="fg" style="flex:3;min-width:180px;"><label>Concepto *</label><input type="text" id="evd-gasto-desc" placeholder="Audio, DJ, Alquiler..."></div>
+      <div class="f-row" style="flex-wrap:wrap;align-items:flex-end;">
+        <div class="fg" style="flex:3;min-width:200px;"><label>Concepto *</label><input type="text" id="evd-gasto-desc" placeholder="Audio, DJ, Alquiler del club..."></div>
         <div class="fg" style="flex:1.5;min-width:120px;"><label>Monto $</label><input type="number" id="evd-gasto-monto" placeholder="0"></div>
-        <div class="fg" style="flex:1.5;min-width:140px;"><label>Estado</label><select id="evd-gasto-estado"><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option></select></div>
         <button class="btn-add-g" onclick="addEvGasto()">Agregar</button>
       </div>
       <table class="dt">
-        <thead><tr><th>Concepto</th><th>Estado</th><th>Monto</th><th>Registrar pago</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th style="text-align:right;">Monto</th>
+            <th style="text-align:center;">Pagado</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody id="evd-gastos-body"></tbody>
       </table>
-      <div class="gastos-total"><span class="total-lbl">Total gastos</span><span class="total-amt c-out" id="evd-gastos-total">$0</span></div>
+      <div class="gastos-total">
+        <div>
+          <div class="total-lbl">Total gastos</div>
+          <div style="font-family:var(--fc);font-size:.7rem;letter-spacing:.08em;color:var(--muted);margin-top:.2rem;" id="evd-gastos-pagado-label"></div>
+        </div>
+        <span class="total-amt c-out" id="evd-gastos-total">$0</span>
+      </div>
     </div>
 
     <!-- RRPP DEL EVENTO -->
     <div id="evt-rrpp" class="ev-tab-content">
-      <div style="margin-bottom:1.5rem;">
-        <button class="btn-g" style="margin-bottom:0;" onclick="openEvRRPPModal()">+ Asignar RRPP a este evento</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <button class="btn-g" style="margin-bottom:0;" onclick="openEvRRPPModal()">+ Asignar RRPP</button>
+        <div id="evd-rrpp-totals" style="font-family:var(--fc);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);"></div>
       </div>
       <div class="rrpp-ev-grid" id="evd-rrpp-grid"></div>
     </div>
@@ -1223,8 +1242,8 @@ function buildEvCard(ev, showPast=false) {
             ${ev.fecha?`<div class="ev-row"><span class="ev-lbl">Fecha</span><span>${fmtDate(ev.fecha)}</span></div>`:''}
             ${ev.lineup?`<div class="ev-row"><span class="ev-lbl">Line Up</span><span>${ev.lineup}</span></div>`:''}
             ${ev.info?`<div class="ev-row"><span class="ev-lbl">Info</span><span>${ev.info}</span></div>`:''}
-            <div style="margin-top:1rem;">
-              <button onclick="openEvDetail('${ev.id}')" style="font-family:var(--fc);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;background:var(--red);color:var(--white);border:none;padding:.5rem 1.2rem;cursor:pointer;">Ver detalle completo →</button>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+              <button onclick="openEvDetail('${ev.id}')" style="font-family:var(--fc);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;background:var(--red);color:var(--white);border:none;padding:.5rem 1.2rem;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='var(--red2)'" onmouseout="this.style.background='var(--red)'">Ver detalle →</button>
             </div>
             <div class="admin-bar">
               <button class="btn-e" onclick="editEv('${ev.id}')">✎ Editar</button>
@@ -1665,33 +1684,63 @@ async function loadEvGastos() {
   const gastos = data||[];
   const tb = document.getElementById('evd-gastos-body');
   if(!tb) return;
-  tb.innerHTML = gastos.map(g=>`<tr>
-    <td>${g.concepto}</td>
-    <td><span class="badge ${g.estado==='pagado'?'b-in':'b-out'}">${g.estado}</span></td>
-    <td class="num">$${Number(g.monto).toLocaleString('es-UY')}</td>
-    <td>${g.estado!=='pagado'?`<button class="btn-reg" onclick="pagarGasto('${g.id}','${g.concepto}',${g.monto})">✓ Pagar</button>`:'<span style="color:var(--green);font-family:var(--fc);font-size:.7rem;">PAGADO</span>'}</td>
-    <td><button class="btn-x" onclick="delGasto('${g.id}')">✕</button></td>
-  </tr>`).join('') || '<tr><td colspan="5" class="empty-td">Sin gastos registrados</td></tr>';
+
+  if (!gastos.length) {
+    tb.innerHTML = '<tr><td colspan="4" class="empty-td">Sin gastos registrados</td></tr>';
+  } else {
+    tb.innerHTML = gastos.map(g=>`<tr style="${g.estado==='pagado'?'opacity:.6':''}">
+      <td style="font-weight:${g.estado==='pagado'?'300':'400'};">${g.concepto}</td>
+      <td class="num">$${Number(g.monto).toLocaleString('es-UY')}</td>
+      <td style="text-align:center;">
+        <label style="display:flex;align-items:center;justify-content:center;cursor:pointer;gap:.4rem;">
+          <input type="checkbox" ${g.estado==='pagado'?'checked':''} 
+            onchange="toggleGastoPago('${g.id}','${g.concepto.replace(/'/g,"\\'")}',${g.monto},this.checked)"
+            style="width:16px;height:16px;accent-color:var(--green);cursor:pointer;">
+          <span style="font-family:var(--fc);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:${g.estado==='pagado'?'var(--green)':'var(--muted)'}">
+            ${g.estado==='pagado'?'Pagado':'Pendiente'}
+          </span>
+        </label>
+      </td>
+      <td style="text-align:right;"><button class="btn-x" onclick="delGasto('${g.id}')">✕</button></td>
+    </tr>`).join('');
+  }
+
   const tot = gastos.reduce((a,g)=>a+ +g.monto,0);
+  const pagado = gastos.filter(g=>g.estado==='pagado').reduce((a,g)=>a+ +g.monto,0);
+  const pendiente = tot - pagado;
+
   const te=document.getElementById('evd-gastos-total');
   if(te) te.textContent='$'+tot.toLocaleString('es-UY');
+  const lbl=document.getElementById('evd-gastos-pagado-label');
+  if(lbl) lbl.innerHTML=`<span style="color:var(--green);">Pagado: $${pagado.toLocaleString('es-UY')}</span> &nbsp;·&nbsp; <span style="color:var(--red);">Pendiente: $${pendiente.toLocaleString('es-UY')}</span>`;
 }
 
 async function addEvGasto() {
   if(!currentEvId) return;
-  const desc=gv('evd-gasto-desc'),monto=gv('evd-gasto-monto'),estado=gv('evd-gasto-estado');
+  const desc=gv('evd-gasto-desc'),monto=gv('evd-gasto-monto');
   if(!desc||!monto){notify('Completá concepto y monto',true);return;}
-  await sb().from('gastos_evento').insert({evento_id:currentEvId,concepto:desc,monto:+monto,estado});
+  await sb().from('gastos_evento').insert({evento_id:currentEvId,concepto:desc,monto:+monto,estado:'pendiente'});
   sv('evd-gasto-desc',''); sv('evd-gasto-monto','');
   loadEvGastos(); notify('Gasto agregado');
 }
 
-async function pagarGasto(id,concepto,monto) {
-  await sb().from('gastos_evento').update({estado:'pagado'}).eq('id',id);
-  // Register as movement
-  await sb().from('movimientos').insert({descripcion:'[Gasto '+currentEvData.nombre+'] '+concepto,monto:+monto,tipo:'out',fecha:new Date().toISOString().split('T')[0],evento_id:currentEvId});
-  loadEvGastos(); loadEvMovimientos(); loadMov();
-  notify('Gasto pagado y registrado en movimientos');
+async function toggleGastoPago(id, concepto, monto, checked) {
+  const estado = checked ? 'pagado' : 'pendiente';
+  await sb().from('gastos_evento').update({estado}).eq('id',id);
+  if (checked) {
+    // Register as outgoing movement
+    await sb().from('movimientos').insert({
+      descripcion:'[Gasto] '+concepto+' — '+currentEvData.nombre,
+      monto:+monto, tipo:'out',
+      fecha:new Date().toISOString().split('T')[0],
+      evento_id:currentEvId
+    });
+    notify('Gasto marcado como pagado y registrado en movimientos');
+    loadEvMovimientos(); loadMov();
+  } else {
+    notify('Gasto marcado como pendiente');
+  }
+  loadEvGastos();
 }
 
 async function delGasto(id) {
@@ -1706,27 +1755,58 @@ async function loadEvRRPP() {
   const lista = data||[];
   const container = document.getElementById('evd-rrpp-grid');
   if(!container) return;
+
+  const totEnt = lista.reduce((a,r)=>a+(r.entradas_vendidas||0),0);
+  const totInv = lista.reduce((a,r)=>a+(r.invitaciones_validadas||0),0);
+  const totEl = document.getElementById('evd-rrpp-totals');
+  if(totEl) totEl.innerHTML = lista.length
+    ? `Total: <strong style="color:var(--white);">${lista.length} RRPP</strong> &nbsp;·&nbsp; Entradas: <strong style="color:var(--green);">${totEnt}</strong> &nbsp;·&nbsp; Invitaciones: <strong style="color:var(--white);">${totInv}</strong>`
+    : '';
+
+  if(!lista.length){container.innerHTML='<p class="empty-msg">No hay RRPP asignados a este evento.</p>';return;}
+
   container.innerHTML = lista.map(r=>`
-    <div class="rrpp-ev-card">
-      <div class="rrpp-ev-name">${r.rrpp?.nombre||''} ${r.rrpp?.apellido||''}</div>
-      <div class="rrpp-ev-meta">${r.rrpp?.email||''} · ${r.rrpp?.telefono||''}</div>
-      ${r.rrpp?.banco?`<div class="rrpp-ev-meta" style="margin-bottom:.5rem;">🏦 ${r.rrpp.banco} — ${r.rrpp.cuenta||''}</div>`:''}
+    <div class="rrpp-ev-card" id="rrpp-ev-card-${r.id}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+        <div>
+          <div class="rrpp-ev-name">${r.rrpp?.nombre||''} ${r.rrpp?.apellido||''}</div>
+          <div class="rrpp-ev-meta">${r.rrpp?.email||''}</div>
+          ${r.rrpp?.telefono?`<div class="rrpp-ev-meta">${r.rrpp.telefono}</div>`:''}
+          ${r.rrpp?.banco?`<div class="rrpp-ev-meta" style="margin-top:.25rem;">🏦 ${r.rrpp.banco}${r.rrpp.cuenta?' — '+r.rrpp.cuenta:''}</div>`:''}
+        </div>
+        <button class="btn-x" onclick="delEvRRPP('${r.id}')" style="margin-top:.2rem;">✕</button>
+      </div>
       <div class="rrpp-ev-stats">
         <div class="rrpp-ev-stat">
           <div class="rrpp-ev-stat-lbl">Entradas vendidas</div>
-          <div class="rrpp-ev-stat-val">${r.entradas_vendidas||0}</div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.3rem;">
+            <button onclick="updateRRPPCount('${r.id}','entradas_vendidas',${(r.entradas_vendidas||0)-1})" style="background:var(--gray3);border:none;color:var(--white);width:26px;height:26px;font-size:1rem;cursor:pointer;">−</button>
+            <span class="rrpp-ev-stat-val" id="ent-${r.id}">${r.entradas_vendidas||0}</span>
+            <button onclick="updateRRPPCount('${r.id}','entradas_vendidas',${(r.entradas_vendidas||0)+1})" style="background:var(--gray3);border:none;color:var(--white);width:26px;height:26px;font-size:1rem;cursor:pointer;">+</button>
+          </div>
         </div>
         <div class="rrpp-ev-stat">
           <div class="rrpp-ev-stat-lbl">Invitaciones</div>
-          <div class="rrpp-ev-stat-val">${r.invitaciones_validadas||0}</div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.3rem;">
+            <button onclick="updateRRPPCount('${r.id}','invitaciones_validadas',${(r.invitaciones_validadas||0)-1})" style="background:var(--gray3);border:none;color:var(--white);width:26px;height:26px;font-size:1rem;cursor:pointer;">−</button>
+            <span class="rrpp-ev-stat-val" id="inv-${r.id}">${r.invitaciones_validadas||0}</span>
+            <button onclick="updateRRPPCount('${r.id}','invitaciones_validadas',${(r.invitaciones_validadas||0)+1})" style="background:var(--gray3);border:none;color:var(--white);width:26px;height:26px;font-size:1rem;cursor:pointer;">+</button>
+          </div>
         </div>
       </div>
-      <div style="display:flex;gap:.5rem;margin-top:.75rem;">
-        <button class="btn-ie" onclick="editEvRRPP('${r.id}','${r.rrpp_id}',${r.entradas_vendidas||0},${r.invitaciones_validadas||0})">✎ Editar</button>
-        <button class="btn-x" onclick="delEvRRPP('${r.id}')">✕</button>
-      </div>
     </div>
-  `).join('') || '<p class="empty-msg">No hay RRPP asignados a este evento.</p>';
+  `).join('');
+}
+
+async function updateRRPPCount(id, field, val) {
+  if(val < 0) val = 0;
+  await sb().from('evento_rrpp').update({[field]:val}).eq('id',id);
+  // Update UI without full reload
+  const prefix = field==='entradas_vendidas' ? 'ent-' : 'inv-';
+  const el = document.getElementById(prefix+id);
+  if(el) el.textContent = val;
+  // Update button handlers - reload to reflect new values in buttons
+  loadEvRRPP();
 }
 
 async function openEvRRPPModal() {
