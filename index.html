@@ -477,7 +477,6 @@ input[type=checkbox] { accent-color: var(--green); }
         </div>
         <div class="tabs">
           <div class="tab active" onclick="switchTab(this,'tc-mov')">Movimientos</div>
-          <div class="tab" onclick="switchTab(this,'tc-cos')">Costos Fijos</div>
         </div>
         <!-- MOVIMIENTOS -->
         <div id="tc-mov" class="tab-content active">
@@ -734,6 +733,7 @@ input[type=checkbox] { accent-color: var(--green); }
 
     <div class="ev-tabs">
       <div class="ev-tab active" onclick="switchEvTab(this,'evt-movimientos')">💰 Movimientos</div>
+      <div class="ev-tab" onclick="switchEvTab(this,'evt-costos')">📌 Costos Fijos</div>
       <div class="ev-tab" onclick="switchEvTab(this,'evt-gastos')">📋 Gastos</div>
       <div class="ev-tab" onclick="switchEvTab(this,'evt-rrpp')">👥 RRPP</div>
     </div>
@@ -749,6 +749,21 @@ input[type=checkbox] { accent-color: var(--green); }
       </div>
       <table class="dt"><thead><tr><th>Fecha</th><th>Descripción</th><th>Tipo</th><th>Monto</th><th></th></tr></thead><tbody id="evd-mov-body"></tbody></table>
       <div class="total-row"><span class="total-lbl">Balance del evento</span><span class="total-amt" id="evd-total-bal">$0</span></div>
+    </div>
+
+    <!-- COSTOS FIJOS DEL EVENTO -->
+    <div id="evt-costos" class="ev-tab-content">
+      <div class="f-row" style="flex-wrap:wrap;align-items:flex-end;">
+        <div class="fg" style="flex:3;min-width:200px;"><label>Nombre *</label><input type="text" id="evd-cos-nombre" placeholder="Nombre del costo fijo"></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Monto $</label><input type="number" id="evd-cos-monto" placeholder="0"></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Tipo</label><select id="evd-cos-tipo"><option value="out">↓ Salida</option><option value="in">↑ Entrada</option></select></div>
+        <div class="fg" style="flex:1.5;min-width:120px;"><label>Fecha pago</label><input type="date" id="evd-cos-fecha"></div>
+        <button class="btn-add-g" onclick="addEvCosto()">Agregar</button>
+      </div>
+      <table class="dt">
+        <thead><tr><th>Nombre</th><th>Tipo</th><th>Fecha pago</th><th style="text-align:right;">Monto</th><th>Registrar pago</th><th></th></tr></thead>
+        <tbody id="evd-cos-body"></tbody>
+      </table>
     </div>
 
     <!-- GASTOS DEL EVENTO -->
@@ -1637,6 +1652,7 @@ function switchEvTab(el, tid) {
   const tc = document.getElementById(tid);
   if(tc) tc.classList.add('active');
   if(tid==='evt-movimientos') loadEvMovimientos();
+  if(tid==='evt-costos') loadEvCostos();
   if(tid==='evt-gastos') loadEvGastos();
   if(tid==='evt-rrpp') loadEvRRPP();
 }
@@ -1933,6 +1949,58 @@ async function deleteRadio(id) {
   if(!confirm('¿Eliminar este episodio?'))return;
   await sb().from('radio').delete().eq('id',id);
   loadRadio(); notify('Episodio eliminado');
+}
+
+// ═══════════════════════════════════════════
+// COSTOS FIJOS DEL EVENTO
+// ═══════════════════════════════════════════
+async function loadEvCostos() {
+  if(!currentEvId) return;
+  const {data} = await sb().from('costos_fijos').select('*').eq('evento_id',currentEvId).order('created_at');
+  const lista = data||[];
+  const tb = document.getElementById('evd-cos-body');
+  if(!tb) return;
+  tb.innerHTML = lista.map(c=>`<tr>
+    <td>${c.nombre}</td>
+    <td><span class="badge ${c.tipo==='in'?'b-in':'b-out'}">${c.tipo==='in'?'Entrada':'Salida'}</span></td>
+    <td>${c.fecha_pago||'—'}</td>
+    <td class="num">$${Number(c.monto).toLocaleString('es-UY')}</td>
+    <td>
+      <button class="btn-reg" onclick="registrarEvCosto('${c.id}','${c.nombre.replace(/'/g,"\\'")}',${c.monto},'${c.tipo}')">✓ Registrar pago</button>
+    </td>
+    <td><button class="btn-x" onclick="delEvCosto('${c.id}')">✕</button></td>
+  </tr>`).join('') || '<tr><td colspan="6" class="empty-td">Sin costos fijos para este evento</td></tr>';
+}
+
+async function addEvCosto() {
+  if(!currentEvId) return;
+  const nombre=gv('evd-cos-nombre'), monto=gv('evd-cos-monto'), tipo=gv('evd-cos-tipo'), fecha=gv('evd-cos-fecha');
+  if(!nombre||!monto){notify('Completá nombre y monto',true);return;}
+  // Save in costos_fijos with evento_id linked
+  await sb().from('costos_fijos').insert({nombre, monto:+monto, tipo, fecha_pago:fecha||null, evento_id:currentEvId});
+  sv('evd-cos-nombre',''); sv('evd-cos-monto','');
+  loadEvCostos();
+  loadCos(); // refresh global costos
+  notify('Costo fijo agregado al evento y a la planilla general');
+}
+
+async function registrarEvCosto(id, nombre, monto, tipo) {
+  // Register as movement linked to this event
+  await sb().from('movimientos').insert({
+    descripcion:'[Costo fijo] '+nombre+' — '+currentEvData.nombre,
+    monto:+monto, tipo, fecha:new Date().toISOString().split('T')[0],
+    evento_id:currentEvId
+  });
+  loadEvMovimientos();
+  loadEvCostos();
+  loadMov(); // refresh global
+  notify('Pago de "'+nombre+'" registrado en movimientos');
+}
+
+async function delEvCosto(id) {
+  await sb().from('costos_fijos').delete().eq('id',id);
+  loadEvCostos();
+  loadCos();
 }
 
 // ═══════════════════════════════════════════
